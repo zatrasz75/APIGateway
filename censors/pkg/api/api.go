@@ -28,7 +28,7 @@ func (api *API) Router() *mux.Router {
 
 // Регистрация обработчиков API.
 func (api *API) endpoints() {
-	api.r.HandleFunc("/comments/add", api.addCommentHandler).Methods(http.MethodPost, http.MethodOptions)
+	api.r.HandleFunc("/comments/check", api.addCommentHandler).Methods(http.MethodPost, http.MethodOptions)
 }
 
 func (api *API) addCommentHandler(w http.ResponseWriter, r *http.Request) {

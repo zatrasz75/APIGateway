@@ -16,7 +16,7 @@ func TestCommentHandler(t *testing.T) {
 	var testBody3 = []byte(`{"newsID": 1,"content": "Тест йцукен "}`)
 	var testBody4 = []byte(`{"newsID": 1,"content": "Тест zxvbnm "}`)
 
-	req := httptest.NewRequest(http.MethodPost, "/comments/add", bytes.NewBuffer(testBody))
+	req := httptest.NewRequest(http.MethodPost, "/comments/check", bytes.NewBuffer(testBody))
 	rr := httptest.NewRecorder()
 	api.Router().ServeHTTP(rr, req)
 	// Проверяем код ответа.
@@ -25,7 +25,7 @@ func TestCommentHandler(t *testing.T) {
 	}
 
 	// Проверяем обращение к handler-у со словами из стоплиста
-	req = httptest.NewRequest(http.MethodPost, "/comments/add", bytes.NewBuffer(testBody2))
+	req = httptest.NewRequest(http.MethodPost, "/comments/check", bytes.NewBuffer(testBody2))
 	rr = httptest.NewRecorder()
 	api.Router().ServeHTTP(rr, req)
 
@@ -33,7 +33,7 @@ func TestCommentHandler(t *testing.T) {
 		t.Errorf("код неверен: получили %d, а хотели %d", rr.Code, http.StatusBadRequest)
 	}
 
-	req = httptest.NewRequest(http.MethodPost, "/comments/add", bytes.NewBuffer(testBody3))
+	req = httptest.NewRequest(http.MethodPost, "/comments/check", bytes.NewBuffer(testBody3))
 	rr = httptest.NewRecorder()
 	api.Router().ServeHTTP(rr, req)
 
@@ -41,7 +41,7 @@ func TestCommentHandler(t *testing.T) {
 		t.Errorf("код неверен: получили %d, а хотели %d", rr.Code, http.StatusBadRequest)
 	}
 
-	req = httptest.NewRequest(http.MethodPost, "/comments/add", bytes.NewBuffer(testBody4))
+	req = httptest.NewRequest(http.MethodPost, "/comments/check", bytes.NewBuffer(testBody4))
 	rr = httptest.NewRecorder()
 	api.Router().ServeHTTP(rr, req)
 

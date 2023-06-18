@@ -174,7 +174,7 @@ func (api *API) addCommentHandler(w http.ResponseWriter, r *http.Request) {
 	Body1 := ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 	Body := ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 
-	respCensor, err := MakeRequest(r, http.MethodPost, "http://localhost:8083/comments/add", Body1)
+	respCensor, err := MakeRequest(r, http.MethodPost, "http://localhost:8083/comments/check", Body1)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
