@@ -3,9 +3,9 @@ module comments
 go 1.20
 
 require (
+	github.com/gofrs/uuid v4.0.0+incompatible
 	github.com/gorilla/mux v1.8.0
 	github.com/jackc/pgx/v4 v4.18.1
-	gopkg.in/guregu/null.v4 v4.0.0
 )
 
 require (

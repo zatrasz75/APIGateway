@@ -2,6 +2,7 @@ package main
 
 import (
 	api "GoNews/pkg/api"
+	"GoNews/pkg/middl"
 	"GoNews/pkg/rss"
 	storage "GoNews/pkg/storage"
 	db "GoNews/pkg/storage/db"
@@ -73,7 +74,7 @@ func main() {
 		}
 	}()
 
-	srv.api.Router().Use(Middle)
+	srv.api.Router().Use(middl.Middle)
 
 	log.Print("Запуск сервера на http://127.0.0.1:8081")
 
@@ -83,32 +84,4 @@ func main() {
 		log.Fatal("Не удалось запустить сервер. Ошибка:", err)
 	}
 
-}
-
-type loggingResponseWriter struct {
-	http.ResponseWriter
-	statusCode int
-}
-
-func NewLoggingResponseWriter(w http.ResponseWriter) *loggingResponseWriter {
-	return &loggingResponseWriter{w, http.StatusOK}
-}
-
-func (lrw *loggingResponseWriter) WriteHeader(code int) {
-	lrw.statusCode = code
-	lrw.ResponseWriter.WriteHeader(code)
-}
-
-func Middle(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		reqID := req.Header.Get("X-Request-ID")
-
-		lrw := NewLoggingResponseWriter(w)
-		next.ServeHTTP(lrw, req)
-
-		statusCode := lrw.statusCode
-		log.Printf("<-- client ip: %s, method: %s, url: %s, status code: %d %s, trace id: %s",
-			req.RemoteAddr, req.Method, req.URL.Path, statusCode, http.StatusText(statusCode), reqID)
-
-	})
 }
