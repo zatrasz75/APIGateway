@@ -69,11 +69,8 @@ func (api *API) newsHandler(w http.ResponseWriter, r *http.Request) {
 		Host:   "localhost:8081", // адрес первого микросервиса
 	})
 
-	// Определяем, к какому микросервису нужно проксировать запрос
-	if r.URL.Path == "/news" {
-		// Проксируем запрос к первому микросервису
-		proxy.ServeHTTP(w, r)
-	}
+	// Проксируем запрос к первому микросервису
+	proxy.ServeHTTP(w, r)
 
 }
 
@@ -88,15 +85,15 @@ func (api *API) newsLatestHandler(w http.ResponseWriter, r *http.Request) {
 		Host:   "localhost:8081", // адрес первого микросервиса
 	})
 
-	// Определяем, к какому микросервису нужно проксировать запрос
-	if r.URL.Path == "/news/latest" {
-		// Проксируем запрос к первому микросервису
-		proxy.ServeHTTP(w, r)
-	}
+	// Проксируем запрос к первому микросервису
+	proxy.ServeHTTP(w, r)
 
 }
 
 func (api *API) newsDetailedHandler(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/news/search" {
+		http.NotFound(w, r)
+	}
 
 	idParam := r.URL.Query().Get("id")
 	if idParam == "" {
@@ -212,11 +209,8 @@ func (api *API) delCommentHandler(w http.ResponseWriter, r *http.Request) {
 		Host:   "localhost:8082", // адрес микросервиса
 	})
 
-	// Определяем, к какому микросервису нужно проксировать запрос
-	if r.URL.Path == "/comments/del" {
-		// Проксируем запрос к первому микросервису
-		proxy.ServeHTTP(w, r)
-	}
+	// Проксируем запрос к первому микросервису
+	proxy.ServeHTTP(w, r)
 }
 
 func MakeRequest(req *http.Request, method, url string, body io.Reader) (*http.Response, error) {
