@@ -49,12 +49,13 @@ func GoNews(configURL string, chanPosts chan<- []storage.Post, chanErrs chan<- e
 				p, err := GetRss(r)
 				if err != nil {
 					chanErrs <- err
+					time.Sleep(time.Second * 10)
 					continue
 				}
 				chanPosts <- p
 				log.Println("insert posts from goroutine", i, "по ссылке", r)
 				log.Println("Goroutine ", i, ": ожидание следующей итерации")
-				time.Sleep(time.Duration(conf.RequestPeriod) * time.Second * 10)
+				time.Sleep(time.Duration(conf.RequestPeriod) * time.Second * 15)
 			}
 		}(r, i, chanPosts, chanErrs)
 	}
