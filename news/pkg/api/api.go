@@ -94,7 +94,7 @@ func (api *API) newsLatestHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	posts, err := api.db.Posts(limit, (page-1)*limit)
+	posts, err := api.db.Posts(limit, page)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

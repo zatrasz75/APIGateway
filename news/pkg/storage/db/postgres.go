@@ -96,11 +96,15 @@ func (p *Store) PostSearchILIKE(pattern string, limit, offset int) ([]storage.Po
 
 // Posts Получение странице с определенным номером
 func (s *Store) Posts(limit, offset int) ([]storage.Post, error) {
+	pagination := storage.Pagination{
+		Page:  offset/limit + 1,
+		Limit: limit,
+	}
 	rows, err := s.db.Query(context.Background(), `
 	SELECT * FROM gonews
 	ORDER BY pubtime DESC LIMIT $1 OFFSET $2
 	`,
-		limit, offset,
+		pagination.Limit, pagination.Page,
 	)
 	if err != nil {
 		return nil, err
