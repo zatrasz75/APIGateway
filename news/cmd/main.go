@@ -1,12 +1,15 @@
 package main
 
 import (
+	config "GoNews/configs"
 	api "GoNews/pkg/api"
 	"GoNews/pkg/middl"
 	"GoNews/pkg/rss"
 	storage "GoNews/pkg/storage"
 	db "GoNews/pkg/storage/db"
 	"context"
+	"flag"
+	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"time"
@@ -18,16 +21,32 @@ type server struct {
 	api *api.API
 }
 
+// init вызывается перед main()
+func init() {
+	// загружает значения из файла .env в систему
+	if err := godotenv.Load(); err != nil {
+		log.Print("No .env file found")
+	}
+}
+
 const (
 	configURL = "./cmd/config.json"
-	dbURL     = "postgres://postgres:rootroot@localhost:5432/aggregator"
-	newsAddr  = ":8081"
 )
 
 func main() {
 
 	// объект сервера
 	var srv server
+
+	cfg := config.New()
+	// Адрес базы данных
+	dbURL := cfg.News.URLdb
+	// Порт по умолчанию.
+	port := cfg.News.AdrPort
+	// Можно сменить Порт при запуске флагом < --news-port= >
+	portFlag := flag.String("news-port", port, "Порт для news сервиса")
+	flag.Parse()
+	portNews := *portFlag
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
@@ -76,10 +95,10 @@ func main() {
 
 	srv.api.Router().Use(middl.Middle)
 
-	log.Print("Запуск сервера на http://127.0.0.1:8081")
+	log.Print("Запуск сервера на http://127.0.0.1" + portNews)
 
 	// запуск веб-сервера с API и приложением
-	err = http.ListenAndServe(newsAddr, srv.api.Router())
+	err = http.ListenAndServe(portNews, srv.api.Router())
 	if err != nil {
 		log.Fatal("Не удалось запустить сервер. Ошибка:", err)
 	}

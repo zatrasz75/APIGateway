@@ -1,8 +1,11 @@
 package main
 
 import (
+	config "censorship/configs"
 	"censorship/pkg/api"
 	"censorship/pkg/middl"
+	"flag"
+	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 )
@@ -12,9 +15,13 @@ type server struct {
 	api *api.API
 }
 
-const (
-	censorAddr = ":8083"
-)
+// init вызывается перед main()
+func init() {
+	// загружает значения из файла .env в систему
+	if err := godotenv.Load(); err != nil {
+		log.Print("No .env file found")
+	}
+}
 
 func main() {
 
@@ -26,9 +33,17 @@ func main() {
 
 	srv.api.Router().Use(middl.Middle)
 
-	log.Print("Запуск сервера на http://127.0.0.1:8083")
+	cfg := config.New()
+	// Порт по умолчанию.
+	port := cfg.Censor.AdrPort
+	// Можно сменить Порт при запуске флагом < --censor-port= >
+	portFlag := flag.String("censor-port", port, "Порт для censor сервиса")
+	flag.Parse()
+	portCensor := *portFlag
 
-	err := http.ListenAndServe(censorAddr, srv.api.Router())
+	log.Print("Запуск сервера на http://127.0.0.1" + portCensor)
+
+	err := http.ListenAndServe(portCensor, srv.api.Router())
 	if err != nil {
 		log.Fatal("Не удалось запустить сервер шлюза. Error:", err)
 	}

@@ -5,6 +5,12 @@ Skillfactory
 
 в каждой из директорий (censors comments news gateway) выполнить команду 
 * go run cmd/main.go
+
+а так же можно изменить порты при запуске флагами
+* go run cmd/main.go --gateway-port= --censor-port= --news-port= --comments-port=
+
+или с помощью Makefile с портами по умолчанию
+* make all
 #### gateway запускается на localhost:8000
 
 ### Доступные API , примеры:
