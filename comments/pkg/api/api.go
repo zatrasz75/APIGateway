@@ -17,6 +17,7 @@ type API struct {
 // New Конструктор API.
 func New(db storage.Interface) *API {
 	api := API{
+		r:  mux.NewRouter(),
 		db: db,
 	}
 	api.r = mux.NewRouter()

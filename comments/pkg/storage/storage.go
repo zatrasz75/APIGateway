@@ -11,4 +11,6 @@ type Interface interface {
 	AllComments(newsID int) ([]Comment, error)
 	AddComment(Comment) error
 	DeleteComment(Comment) error
+	CreateCommentTable() error
+	DropCommentTable() error
 }

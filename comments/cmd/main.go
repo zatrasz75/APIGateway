@@ -51,6 +51,19 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// Удаление таблицы comment если существует
+	err = db.DropCommentTable()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	// Создание таблицы comment если не существует
+	err = db.CreateCommentTable()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	// Инициализируем хранилище сервера конкретной БД.
 	srv.db = db
 

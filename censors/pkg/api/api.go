@@ -1,21 +1,25 @@
 package api
 
 import (
+	"censorship/pkg/storage"
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 	"regexp"
 )
 
 // API приложения.
 type API struct {
-	r *mux.Router // Маршрутизатор запросов
+	r  *mux.Router       // Маршрутизатор запросов
+	db storage.Interface // база данных
 }
 
 // New Конструктор API.
-func New() *API {
+func New(db storage.Interface) *API {
 	api := API{
-		r: mux.NewRouter(),
+		r:  mux.NewRouter(),
+		db: db,
 	}
 	api.endpoints()
 	return &api
@@ -29,8 +33,10 @@ func (api *API) Router() *mux.Router {
 // Регистрация обработчиков API.
 func (api *API) endpoints() {
 	api.r.HandleFunc("/comments/check", api.addCommentHandler).Methods(http.MethodPost, http.MethodOptions)
+	api.r.HandleFunc("/comments/stop", api.addListHandler).Methods(http.MethodPost, http.MethodOptions)
 }
 
+// Получает из базы данных все слова из стоп листа.
 func (api *API) addCommentHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -44,14 +50,15 @@ func (api *API) addCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	stoplist := []string{
-		"qwerty",
-		"йцукен",
-		"zxvbnm",
+	stoplist, err := api.db.AllList()
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	for _, stopWord := range stoplist {
-		matched, err := regexp.MatchString(stopWord, text.Content)
+		matched, err := regexp.MatchString(stopWord.StopList, text.Content)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -63,4 +70,24 @@ func (api *API) addCommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+// Добавление слов в стоп лист базы данных.
+func (api *API) addListHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	var c storage.Stop
+	err := json.NewDecoder(r.Body).Decode(&c)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusConflict)
+		return
+	}
+
+	err = api.db.AddList(c)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	http.ResponseWriter.WriteHeader(w, http.StatusCreated)
+
 }

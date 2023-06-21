@@ -152,3 +152,29 @@ func (p *Store) PostDetal(id int) (storage.Post, error) {
 	}
 	return post, nil
 }
+
+// CreateGonewsTable Создает таблицу
+func (p *Store) CreateGonewsTable() error {
+	_, err := p.db.Exec(context.Background(), `
+		CREATE TABLE IF NOT EXISTS gonews (
+                id SERIAL PRIMARY KEY,
+                title TEXT NOT NULL DEFAULT 'empty',
+                 content TEXT NOT NULL DEFAULT 'empty',
+                pubtime BIGINT NOT NULL DEFAULT extract (epoch from now()),
+                link TEXT NOT NULL
+		);
+	`)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// DropGonewsTable Удаляет таблицу
+func (p *Store) DropGonewsTable() error {
+	_, err := p.db.Exec(context.Background(), "DROP TABLE IF EXISTS gonews;")
+	if err != nil {
+		return err
+	}
+	return nil
+}

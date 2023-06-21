@@ -68,3 +68,28 @@ func (p *Store) DeleteComment(c storage.Comment) error {
 	}
 	return nil
 }
+
+// CreateCommentTable Создает таблицу
+func (p *Store) CreateCommentTable() error {
+	_, err := p.db.Exec(context.Background(), `
+		CREATE TABLE IF NOT EXISTS comments (
+                id SERIAL PRIMARY KEY,
+                news_id INT,
+                content TEXT NOT NULL DEFAULT 'empty',
+                pubtime BIGINT NOT NULL DEFAULT extract (epoch from now())
+		);
+	`)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// DropCommentTable Удаляет таблицу
+func (p *Store) DropCommentTable() error {
+	_, err := p.db.Exec(context.Background(), "DROP TABLE IF EXISTS comments;")
+	if err != nil {
+		return err
+	}
+	return nil
+}

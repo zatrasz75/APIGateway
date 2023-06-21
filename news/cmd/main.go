@@ -57,6 +57,19 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// Удаление таблицы gonews если существует
+	err = db.DropGonewsTable()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	// Создание таблицы gonews если не существует
+	err = db.CreateGonewsTable()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	// Инициализируем хранилище сервера конкретной БД.
 	srv.db = db
 

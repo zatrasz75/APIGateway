@@ -2,6 +2,7 @@
 Skillfactory
 
 ### запустить приложение:
+#### Соединение со свей базой данных PostgreSql и порты можно отредактировать в файлах .env 
 
 в каждой из директорий (censors comments news gateway) выполнить команду 
 * go run cmd/main.go
