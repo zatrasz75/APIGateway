@@ -23,8 +23,9 @@ func StopList() ([]storage.Stop, error) {
 
 	var sl []storage.Stop
 	for _, line := range lines {
+		trimmedLine := strings.TrimSpace(line)
 		str := storage.Stop{
-			StopList: line,
+			StopList: trimmedLine,
 		}
 		sl = append(sl, str)
 	}

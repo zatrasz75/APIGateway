@@ -32,7 +32,7 @@ func New(ctx context.Context, constr string) (*Store, error) {
 }
 
 func (p *Store) AllList() ([]storage.Stop, error) {
-	rows, err := p.db.Query(context.Background(), "SELECT * FROM stpop")
+	rows, err := p.db.Query(context.Background(), "SELECT * FROM stop")
 	if err != nil {
 		return nil, err
 	}
